@@ -5,8 +5,6 @@
 
 
 
-# need to add argv stuff to have user input csv files
-# write to file
 
 import sys, itertools, os
 
@@ -33,7 +31,7 @@ def predicted_glycopeptides():
         glycoformslist.append(row) #glycoformslist columns: glycan name, mass
         glycomass.append(float(row[1])) #glycomass column: mass
 
-    glycopeptides = open("predicted_glycopeptides.csv", 'w')
+    glycopeptides = open(cwd_path + '\\' + "predicted_glycopeptides.csv", 'w')
         
     peptides = open(cwd_path + '\\' + sys.argv[1], 'r').readlines()
     for line in peptides:
@@ -48,7 +46,8 @@ def predicted_glycopeptides():
                 i = i + 1
         
         if i == 0:
-            print pep[3] + ', ' + pep[0] + '\n' #no glycsites
+            glycopeptides.write(pep[3] + ', ' + pep[0] + '\n') #no glycsites
+            #print pep[3] + ', ' + pep[0] + '\n' #no glycsites
 
         else:
             permutationlist = itertools.product(glycomass, repeat = i)
@@ -60,7 +59,8 @@ def predicted_glycopeptides():
                                 
                     mass = mass + glycoform_mass
                                 
-                print pep[3] + ', ' + str(mass) + ',' + 'glycopeptide ' + '\n'
+                glycopeptides.write(pep[3] + ', ' + str(mass) + ',' + 'glycopeptide ' + '\n')
+                #print pep[3] + ', ' + str(mass) + ',' + 'glycopeptide ' + '\n'
             
     glycopeptides.close()
 
