@@ -3,45 +3,64 @@
 # (potential_glycoforms)
 # to determine theoretical masses of peptides including glycopeptides
 
-import os
 
+
+# need to add argv stuff to have user input csv files
+# write to file
+
+import sys, itertools, os
+
+
+program_name = sys.argv[0] 
+    
 os.chdir("C:\Users\deborah\Documents\_Work and School\BU\Zaia Lab Rotation October 2015\projects\predicted_glycopeptides_HA_20151006")
 
 def predicted_glycopeptides():
 
-    peptides = open("tryptic_peptides.csv", 'r').readlines()
-    peplist = []
-    for line in peptides:
-        line = line.strip() #removes extra newline character
-        row = line.split(',') #splits mass, mc, sequence into a list
-        peplist.append(row) #adds pep_item into peplist--nested lists
-
     nglyc = open("NGlyc_sites.csv", 'r').readlines()
     nglyclist = []
     for line in nglyc:
-        line = line.strip()
-        row = line.split(',')
-        nglyclist.append(row) #add nglyc_item into nglyclist--nested lists
+        line = line.strip() #removes extra newline character
+        row = line.split(',') # splits each line into a list
+        nglyclist.append(row) #nglyclist columns: stuff, position, sequence, stuff, stuff, +++'s
 
     glycoforms = open("potential_glycoforms.csv", 'r').readlines()
-    glycoformslist = []
+    glycoformslist = [] #a list of names and masses of glycoforms
+    glycomass = [] #a list of just the masses of glycoforms
     for line in glycoforms:
         line = line.strip()
         row = line.split(',')
-        glycoformslist.append(row)
+        glycoformslist.append(row) #glycoformslist columns: glycan name, mass
+        glycomass.append(float(row[1])) #glycomass column: mass
 
     glycopeptides = open("predicted_glycopeptides.csv", 'w')
         
-    # for each line in expasy output, search to see if nglyc_site matches with any part of the tryptic_peptide sequence
-    for pep in peplist:
+    peptides = open("tryptic_peptides.csv", 'r').readlines()
+    for line in peptides:
+        line = line.strip() #removes extra newline character
+        pep = line.split(',') #splits mass, mc, sequence into a list
         position = pep[1].split('-')
+
+        i = 0 # number of glycsites counter
         for glycsite in nglyclist:
+        
             if glycsite[1] > position[0] and glycsite[1] < position[1] and (glycsite[5] == '++' or glycsite[5] == '+++'):
-                for glycoform in glycoformslist:
-                    mass = float(pep[0]) + float(glycoform[1])
-                    print pep[3] + ', ' + str(mass) + ', ' +  'glycopeptide ' + glycoform[0] + '\n'
-            
-        print pep[3] + ', ' + pep[0] + '\n'
+                i = i + 1
+        
+        if i == 0:
+            print pep[3] + ', ' + pep[0] + '\n' #no glycsites
+
+        else:
+            permutationlist = itertools.product(glycomass, repeat = i)
+
+
+            for permutation in permutationlist:
+                mass = float(pep[0]) # initial mass of peptide
+                for glycoform_mass in permutation:
+                                
+                    mass = mass + glycoform_mass
+                                
+                print pep[3] + ', ' + str(mass) + ',' + 'glycopeptide ' + '\n'
             
     glycopeptides.close()
 
