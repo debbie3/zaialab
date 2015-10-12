@@ -11,20 +11,20 @@
 import sys, itertools, os
 
 
-program_name = sys.argv[0] 
-    
-os.chdir("C:\Users\deborah\Documents\_Work and School\BU\Zaia Lab Rotation October 2015\projects\predicted_glycopeptides_HA_20151006")
+cwd_path = os.getcwd()
+
+program_name = sys.argv[0]
 
 def predicted_glycopeptides():
 
-    nglyc = open("NGlyc_sites.csv", 'r').readlines()
+    nglyc = open(cwd_path + '\\' + sys.argv[2], 'r').readlines()
     nglyclist = []
     for line in nglyc:
         line = line.strip() #removes extra newline character
         row = line.split(',') # splits each line into a list
         nglyclist.append(row) #nglyclist columns: stuff, position, sequence, stuff, stuff, +++'s
 
-    glycoforms = open("potential_glycoforms.csv", 'r').readlines()
+    glycoforms = open(cwd_path + '\\' + sys.argv[3], 'r').readlines()
     glycoformslist = [] #a list of names and masses of glycoforms
     glycomass = [] #a list of just the masses of glycoforms
     for line in glycoforms:
@@ -35,7 +35,7 @@ def predicted_glycopeptides():
 
     glycopeptides = open("predicted_glycopeptides.csv", 'w')
         
-    peptides = open("tryptic_peptides.csv", 'r').readlines()
+    peptides = open(cwd_path + '\\' + sys.argv[1], 'r').readlines()
     for line in peptides:
         line = line.strip() #removes extra newline character
         pep = line.split(',') #splits mass, mc, sequence into a list
